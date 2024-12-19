@@ -18,6 +18,15 @@
   padding: 20px;
 }
 
+.stock {
+  cursor: pointer; /* Rend la pioche cliquable */
+}
+
+.stock:hover {
+  transform: scale(1.05); /* Donne un effet au survol */
+  transition: transform 0.2s;
+}
+
 .stock-pile {
   display: flex;
   gap: 10px;
@@ -60,11 +69,26 @@
 }
 
 .column-slot {
-  width: 100px;
-  height: 150px;
+  position: relative; /* Permet d'empiler les cartes avec positionnement absolu */
+  width: 100px; /* Largeur fixe pour chaque colonne */
+  min-height: 150px; /* Assure qu'une colonne vide ait toujours une hauteur */
   border: 2px dashed #ccc;
   border-radius: 5px;
   background-color: #f0f0f0;
+}
+
+.column-slot .card {
+  position: absolute; /* Les cartes sont empilées les unes sur les autres */
+  top: calc(
+    20px * var(--card-index)
+  ); /* Décalage vertical basé sur l'index de la carte */
+  left: 0; /* Toutes les cartes sont alignées à gauche */
+}
+
+.column-slot .card img {
+  z-index: var(
+    --card-index
+  ); /* Assure que chaque carte est empilée dans le bon ordre */
 }
 
 .stock,
@@ -99,7 +123,6 @@ button:hover {
 .card img {
   width: 100%;
   height: 100%;
-  border-radius: 10px; /* Ajoute un arrondi à toutes les images */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   object-fit: cover; /* Assure que l'image remplit la carte */
 }

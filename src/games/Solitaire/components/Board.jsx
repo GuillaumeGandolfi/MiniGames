@@ -1,28 +1,51 @@
 import React from 'react';
+import Card from './Card';
 
-const Board = ({ columns, foundations, stock, waste }) => {
+const Board = ({ columns, foundations, stock, waste, onDrawCard }) => {
   return (
     <div className="board">
-      {/* Ligne du haut */}
       <div className="top-row">
         <div className="stock-pile">
-          <div className="stock">{stock.length > 0 ? 'Pioche' : 'Vide'}</div>
-          <div className="waste">{waste.length > 0 ? 'Défausse' : 'Vide'}</div>
+          {/* Pioche */}
+          <div className="stock" onClick={onDrawCard}>
+            {stock.length > 0 ? (
+              <Card value="back" suit="" isFaceUp={false} />
+            ) : (
+              'Pioche vide'
+            )}
+          </div>
+          {/* Défausse */}
+          <div className="waste">
+            {waste.length > 0 ? (
+              <Card {...waste[waste.length - 1]} />
+            ) : (
+              'Défausse vide'
+            )}
+          </div>
         </div>
         <div className="foundations">
-          {foundations.map((_, index) => (
+          {foundations.map((foundation, index) => (
             <div key={index} className="foundation-slot">
-              Fondation {index + 1}
+              {foundation.length > 0 ? (
+                <Card {...foundation[foundation.length - 1]} />
+              ) : null}
             </div>
           ))}
         </div>
       </div>
-
-      {/* Ligne du bas */}
       <div className="columns">
-        {columns.map((column, index) => (
-          <div key={index} className="column-slot">
-            Colonne {index + 1}
+        {columns.map((column, columnIndex) => (
+          <div key={columnIndex} className="column-slot">
+            {column.map((card, cardIndex) => (
+              <div
+                key={cardIndex}
+                style={{
+                  '--card-index': cardIndex,
+                }} /* Définit le décalage visuel */
+              >
+                <Card {...card} />
+              </div>
+            ))}
           </div>
         ))}
       </div>
