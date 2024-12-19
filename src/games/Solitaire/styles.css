@@ -1,0 +1,91 @@
+.solitaire {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Ligne du haut : Pioche, Défausse et Fondations */
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 20px;
+}
+
+.stock-pile {
+  display: flex;
+  gap: 10px;
+}
+
+.stock,
+.waste {
+  width: 100px;
+  height: 150px;
+  border: 2px dashed #ccc;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.foundations {
+  display: flex;
+  gap: 10px;
+}
+
+.foundation-slot {
+  width: 100px;
+  height: 150px;
+  border: 2px dashed #ccc;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ligne du bas : Colonnes jouables */
+.columns {
+  display: flex;
+  gap: 10px;
+}
+
+.column-slot {
+  width: 100px;
+  height: 150px;
+  border: 2px dashed #ccc;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+}
+
+.stock,
+.waste,
+.foundation-slot,
+.column-slot {
+  font-size: 14px;
+  text-align: center;
+  line-height: 150px;
+}
+
+button {
+  padding: 10px 15px;
+  margin: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button:hover {
+  background-color: #e2e6ea;
+}
