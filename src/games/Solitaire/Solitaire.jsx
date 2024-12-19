@@ -10,12 +10,28 @@ const Solitaire = () => {
   const [stock, setStock] = useState([]);
   const [waste, setWaste] = useState([]);
 
-  // Initialisation du jeu
-  React.useEffect(() => {
+  const startNewGame = () => {
     const { initialColumns, initialStock } = initializeGame();
     setColumns(initialColumns);
+    setFoundations(Array(4).fill([])); // Vide les fondations
     setStock(initialStock);
+    setWaste([]); // Vide la défausse
+  };
+
+  // Démarrer une nouvelle partie à l'initialisation
+  React.useEffect(() => {
+    startNewGame();
   }, []);
+
+  // Déplacer une carte
+  const handleCardMove = (card, targetColumnIndex) => {
+    const updatedColumns = [...columns];
+    updatedColumns[targetColumnIndex] = [
+      ...updatedColumns[targetColumnIndex],
+      card,
+    ];
+    setColumns(updatedColumns);
+  };
 
   // Fonction pour tirer une carte de la pioche
   const drawFromStock = () => {
@@ -31,9 +47,8 @@ const Solitaire = () => {
     <div className="solitaire">
       <h1>Jeu du Solitaire</h1>
       <Controls
-        onNewGame={() => console.log('Nouvelle partie')}
+        onNewGame={startNewGame}
         onUndo={() => console.log('Annuler')}
-        onDrawCard={drawFromStock}
       />
       <Board
         columns={columns}
@@ -41,6 +56,7 @@ const Solitaire = () => {
         stock={stock}
         waste={waste}
         onDrawCard={drawFromStock}
+        onCardMove={handleCardMove}
       />
     </div>
   );
