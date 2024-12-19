@@ -16,27 +16,32 @@ export const initializeGame = () => {
     'K',
   ];
 
-  // Générer un deck complet
+  // Générer un deck complet avec des cartes face cachée
   const deck = [];
   suits.forEach((suit) => {
     values.forEach((value) => {
-      deck.push({ suit, value });
+      deck.push({ suit, value, isFaceUp: false });
     });
   });
 
   // Mélanger les cartes
   const shuffledDeck = deck.sort(() => Math.random() - 0.5);
 
-  // Répartir les cartes dans les colonnes initiales (1 à 7 cartes)
+  // Répartir les cartes dans les 7 colonnes initiales
   const initialColumns = Array(7)
     .fill([])
-    .map((_, i) => shuffledDeck.splice(0, i + 1));
+    .map((_, i) =>
+      shuffledDeck.splice(0, i + 1).map((card, index, arr) => ({
+        ...card,
+        isFaceUp: index === arr.length - 1, // La dernière carte de chaque colonne est face visible
+      })),
+    );
 
-  // Le reste des cartes est placé dans la pioche
+  // Le reste des cartes constitue la pile de pioche
   const initialStock = shuffledDeck;
 
   return {
-    initialColumns,
-    initialStock,
+    initialColumns, // Colonnes jouables
+    initialStock, // Pioche
   };
 };
