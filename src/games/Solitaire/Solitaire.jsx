@@ -27,10 +27,10 @@ const Solitaire = () => {
   const handleCardMove = (card, targetColumnIndex) => {
     const updatedColumns = [...columns];
 
-    // Si la carte vient de la défausse
+    // Vérifier si la carte provient de la défausse
     if (waste.some((c) => c.value === card.value && c.suit === card.suit)) {
       const updatedWaste = [...waste];
-      updatedWaste.pop(); // Retire la dernière carte visible
+      updatedWaste.pop(); // Retirer la dernière carte de la défausse
       setWaste(updatedWaste);
 
       // Ajouter la carte à la colonne cible
@@ -39,7 +39,7 @@ const Solitaire = () => {
         card,
       ];
     } else {
-      // Logique existante pour les colonnes
+      // Trouver la colonne d'origine
       const originColumnIndex = columns.findIndex((column) =>
         column.some((c) => c.value === card.value && c.suit === card.suit),
       );
@@ -49,13 +49,23 @@ const Solitaire = () => {
         return;
       }
 
+      // Retirer la carte de la colonne d'origine
       const originColumn = [...updatedColumns[originColumnIndex]];
       const cardIndexInOrigin = originColumn.findIndex(
         (c) => c.value === card.value && c.suit === card.suit,
       );
-      const cardsToMove = originColumn.splice(cardIndexInOrigin);
+      const cardsToMove = originColumn.splice(cardIndexInOrigin); // Cartes à déplacer
       updatedColumns[originColumnIndex] = originColumn;
 
+      // Si la colonne d'origine a une carte cachée en dernier, on la retourne
+      if (
+        originColumn.length > 0 &&
+        !originColumn[originColumn.length - 1].isFaceUp
+      ) {
+        originColumn[originColumn.length - 1].isFaceUp = true;
+      }
+
+      // Ajouter les cartes à la colonne cible
       updatedColumns[targetColumnIndex] = [
         ...updatedColumns[targetColumnIndex],
         ...cardsToMove,
