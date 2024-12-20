@@ -45,3 +45,11 @@ export const initializeGame = () => {
     initialStock, // Pioche
   };
 };
+
+export const getCardValue = (value) => {
+  if (value === 'A') return 1;
+  if (value === 'J') return 11;
+  if (value === 'Q') return 12;
+  if (value === 'K') return 13;
+  return parseInt(value, 10);
+};

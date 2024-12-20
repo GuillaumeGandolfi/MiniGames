@@ -48,11 +48,22 @@ const Board = ({
           </div>
         </div>
         <div className="foundations">
-          {foundations.map((foundation, index) => (
-            <div key={index} className="foundation-slot">
+          {foundations.map((foundation, foundationIndex) => (
+            <div
+              key={foundationIndex}
+              className="foundation-slot"
+              onDragOver={(e) => e.preventDefault()} // Permet le drag
+              onDrop={(e) => {
+                e.preventDefault();
+                const cardData = JSON.parse(e.dataTransfer.getData('card'));
+                onCardMove(cardData, foundationIndex, 'foundation'); // Indiquer que c'est une fondation
+              }}
+            >
               {foundation.length > 0 ? (
                 <Card {...foundation[foundation.length - 1]} />
-              ) : null}
+              ) : (
+                'Fondation vide'
+              )}
             </div>
           ))}
         </div>
