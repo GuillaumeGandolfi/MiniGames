@@ -26,10 +26,43 @@ const Solitaire = () => {
   // Déplacer une carte
   const handleCardMove = (card, targetColumnIndex) => {
     const updatedColumns = [...columns];
-    updatedColumns[targetColumnIndex] = [
-      ...updatedColumns[targetColumnIndex],
-      card,
-    ];
+
+    // Si la carte vient de la défausse
+    if (waste.some((c) => c.value === card.value && c.suit === card.suit)) {
+      const updatedWaste = [...waste];
+      updatedWaste.pop(); // Retire la dernière carte visible
+      setWaste(updatedWaste);
+
+      // Ajouter la carte à la colonne cible
+      updatedColumns[targetColumnIndex] = [
+        ...updatedColumns[targetColumnIndex],
+        card,
+      ];
+    } else {
+      // Logique existante pour les colonnes
+      const originColumnIndex = columns.findIndex((column) =>
+        column.some((c) => c.value === card.value && c.suit === card.suit),
+      );
+
+      if (originColumnIndex === -1) {
+        console.error("Impossible de trouver la colonne d'origine !");
+        return;
+      }
+
+      const originColumn = [...updatedColumns[originColumnIndex]];
+      const cardIndexInOrigin = originColumn.findIndex(
+        (c) => c.value === card.value && c.suit === card.suit,
+      );
+      const cardsToMove = originColumn.splice(cardIndexInOrigin);
+      updatedColumns[originColumnIndex] = originColumn;
+
+      updatedColumns[targetColumnIndex] = [
+        ...updatedColumns[targetColumnIndex],
+        ...cardsToMove,
+      ];
+    }
+
+    // Mettre à jour les colonnes
     setColumns(updatedColumns);
   };
 

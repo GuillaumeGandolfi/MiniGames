@@ -33,7 +33,15 @@ const Board = ({
           </div>
           <div className="waste">
             {waste.length > 0 ? (
-              <Card {...waste[waste.length - 1]} />
+              <Card
+                {...waste[waste.length - 1]}
+                onDragStart={(e) => {
+                  e.dataTransfer.setData(
+                    'card',
+                    JSON.stringify(waste[waste.length - 1]),
+                  );
+                }}
+              />
             ) : (
               'Défausse vide'
             )}
