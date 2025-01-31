@@ -23,12 +23,11 @@ const Solitaire = () => {
     startNewGame();
   }, []);
 
-  // Déplacer une carte
   const handleCardMove = (card, targetIndex, targetType) => {
     const updatedColumns = [...columns];
     const updatedFoundations = [...foundations];
 
-    // Gestion des fondations
+    // 1️⃣ 🔥 Gestion des fondations
     if (targetType === 'foundation') {
       const targetFoundation = updatedFoundations[targetIndex];
 
@@ -80,7 +79,7 @@ const Solitaire = () => {
       return;
     }
 
-    // Cartes venant de la défausse vers les colonnes
+    // 2️⃣ 🃏 Gestion des cartes venant de la défausse vers les colonnes
     if (waste.some((c) => c.value === card.value && c.suit === card.suit)) {
       const updatedWaste = [...waste];
       updatedWaste.pop();
@@ -96,7 +95,6 @@ const Solitaire = () => {
         const lastCard = targetColumn[targetColumn.length - 1];
         const isValidMove =
           getCardValue(lastCard.value) === getCardValue(card.value) + 1 &&
-          lastCard.suit !== card.suit &&
           (lastCard.suit === 'hearts' || lastCard.suit === 'diamonds') !==
             (card.suit === 'hearts' || card.suit === 'diamonds');
 
@@ -114,7 +112,7 @@ const Solitaire = () => {
       return;
     }
 
-    // Déplacements entre colonnes
+    // 3️⃣ 🎴 Gestion des déplacements entre colonnes avec règles (NOUVEAU)
     const originColumnIndex = columns.findIndex((column) =>
       column.some((c) => c.value === card.value && c.suit === card.suit),
     );
@@ -125,7 +123,31 @@ const Solitaire = () => {
         (c) => c.value === card.value && c.suit === card.suit,
       );
       const cardsToMove = originColumn.splice(cardIndexInOrigin);
+
+      const targetColumn = updatedColumns[targetIndex];
+
+      if (targetColumn.length === 0) {
+        if (card.value !== 'K') {
+          console.error('Seul un Roi peut être placé sur une colonne vide.');
+          return;
+        }
+      } else {
+        const lastCard = targetColumn[targetColumn.length - 1];
+        const isValidMove =
+          getCardValue(lastCard.value) === getCardValue(card.value) + 1 &&
+          (lastCard.suit === 'hearts' || lastCard.suit === 'diamonds') !==
+            (card.suit === 'hearts' || card.suit === 'diamonds');
+
+        if (!isValidMove) {
+          console.error(
+            "Déplacement invalide : il faut une carte de couleur opposée et d'une valeur immédiatement inférieure.",
+          );
+          return;
+        }
+      }
+
       updatedColumns[originColumnIndex] = originColumn;
+      updatedColumns[targetIndex] = [...targetColumn, ...cardsToMove];
 
       if (
         originColumn.length > 0 &&
@@ -133,11 +155,6 @@ const Solitaire = () => {
       ) {
         originColumn[originColumn.length - 1].isFaceUp = true;
       }
-
-      updatedColumns[targetIndex] = [
-        ...updatedColumns[targetIndex],
-        ...cardsToMove,
-      ];
 
       setColumns(updatedColumns);
     }
