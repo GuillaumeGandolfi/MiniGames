@@ -10,6 +10,7 @@ const Solitaire = () => {
   const [foundations, setFoundations] = useState(Array(4).fill([]));
   const [stock, setStock] = useState([]);
   const [waste, setWaste] = useState([]);
+  const [history, setHistory] = useState([]);
 
   const startNewGame = () => {
     const { initialColumns, initialStock } = initializeGame();
@@ -24,10 +25,12 @@ const Solitaire = () => {
   }, []);
 
   const handleCardMove = (card, targetIndex, targetType) => {
+    setHistory([...history, { columns, foundations, stock, waste }]);
+
     const updatedColumns = [...columns];
     const updatedFoundations = [...foundations];
 
-    // 1️⃣ 🔥 Gestion des fondations
+    // Gestion des fondations
     if (targetType === 'foundation') {
       const targetFoundation = updatedFoundations[targetIndex];
 
@@ -79,7 +82,7 @@ const Solitaire = () => {
       return;
     }
 
-    // 2️⃣ 🃏 Gestion des cartes venant de la défausse vers les colonnes
+    // Cartes venant de la défausse vers les colonnes
     if (waste.some((c) => c.value === card.value && c.suit === card.suit)) {
       const updatedWaste = [...waste];
       updatedWaste.pop();
@@ -112,7 +115,7 @@ const Solitaire = () => {
       return;
     }
 
-    // 3️⃣ 🎴 Gestion des déplacements entre colonnes avec règles (NOUVEAU)
+    // Déplacements entre colonnes avec règles
     const originColumnIndex = columns.findIndex((column) =>
       column.some((c) => c.value === card.value && c.suit === card.suit),
     );
@@ -161,6 +164,9 @@ const Solitaire = () => {
   };
 
   const drawFromStock = () => {
+    if (stock.length > 0 || waste.length > 0) {
+      setHistory([...history, { columns, foundations, stock, waste }]);
+    }
     if (stock.length > 0) {
       const card = stock.pop();
       card.isFaceUp = true;
@@ -174,13 +180,23 @@ const Solitaire = () => {
     }
   };
 
+  const undoLastMove = () => {
+    if (history.length === 0) return;
+
+    // Récupérer le dernier état
+    const lastState = history.pop();
+    setColumns(lastState.columns);
+    setFoundations(lastState.foundations);
+    setStock(lastState.stock);
+    setWaste(lastState.waste);
+    // Mettre à jour l'historique
+    setHistory([...history]);
+  };
+
   return (
     <div className="solitaire">
       <h1>Jeu du Solitaire</h1>
-      <Controls
-        onNewGame={startNewGame}
-        onUndo={() => console.log('Annuler')}
-      />
+      <Controls onNewGame={startNewGame} onUndo={undoLastMove} />
       <Board
         columns={columns}
         foundations={foundations}
