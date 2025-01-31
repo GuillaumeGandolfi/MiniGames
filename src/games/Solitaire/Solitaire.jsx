@@ -14,12 +14,11 @@ const Solitaire = () => {
   const startNewGame = () => {
     const { initialColumns, initialStock } = initializeGame();
     setColumns(initialColumns);
-    setFoundations(Array(4).fill([])); // Vide les fondations
+    setFoundations(Array(4).fill([]));
     setStock(initialStock);
-    setWaste([]); // Vide la défausse
+    setWaste([]);
   };
 
-  // Démarrer une nouvelle partie à l'initialisation
   React.useEffect(() => {
     startNewGame();
   }, []);
@@ -29,18 +28,16 @@ const Solitaire = () => {
     const updatedColumns = [...columns];
     const updatedFoundations = [...foundations];
 
-    // Si la cible est une fondation (As)
+    // Gestion des fondations
     if (targetType === 'foundation') {
       const targetFoundation = updatedFoundations[targetIndex];
 
-      // Vérifier si la fondation est vide
       if (targetFoundation.length === 0) {
         if (card.value !== 'A') {
           console.error('Seul un As peut être placé sur une fondation vide.');
           return;
         }
       } else {
-        // Vérifier que la carte suit la règle du même symbole et de l’ordre croissant
         const lastCard = targetFoundation[targetFoundation.length - 1];
         if (
           lastCard.suit !== card.suit ||
@@ -51,13 +48,11 @@ const Solitaire = () => {
         }
       }
 
-      // Si la carte provient de la défausse
       if (waste.some((c) => c.value === card.value && c.suit === card.suit)) {
         const updatedWaste = [...waste];
-        updatedWaste.pop(); // Retirer la dernière carte de la défausse
+        updatedWaste.pop();
         setWaste(updatedWaste);
       } else {
-        // Sinon, elle provient d'une colonne jouable
         const originColumnIndex = columns.findIndex((column) =>
           column.some((c) => c.value === card.value && c.suit === card.suit),
         );
@@ -67,10 +62,9 @@ const Solitaire = () => {
           const cardIndexInOrigin = originColumn.findIndex(
             (c) => c.value === card.value && c.suit === card.suit,
           );
-          originColumn.splice(cardIndexInOrigin); // Retirer la carte de la colonne
+          originColumn.splice(cardIndexInOrigin);
           updatedColumns[originColumnIndex] = originColumn;
 
-          // Si une carte face cachée est en dernier, la révéler
           if (
             originColumn.length > 0 &&
             !originColumn[originColumn.length - 1].isFaceUp
@@ -80,14 +74,47 @@ const Solitaire = () => {
         }
       }
 
-      // Ajouter la carte à la fondation cible
       updatedFoundations[targetIndex] = [...targetFoundation, card];
-
-      // Mettre à jour les états
       setColumns(updatedColumns);
       setFoundations(updatedFoundations);
       return;
     }
+
+    // Cartes venant de la défausse vers les colonnes
+    if (waste.some((c) => c.value === card.value && c.suit === card.suit)) {
+      const updatedWaste = [...waste];
+      updatedWaste.pop();
+
+      const targetColumn = updatedColumns[targetIndex];
+
+      if (targetColumn.length === 0) {
+        if (card.value !== 'K') {
+          console.error('Seul un Roi peut être placé sur une colonne vide.');
+          return;
+        }
+      } else {
+        const lastCard = targetColumn[targetColumn.length - 1];
+        const isValidMove =
+          getCardValue(lastCard.value) === getCardValue(card.value) + 1 &&
+          lastCard.suit !== card.suit &&
+          (lastCard.suit === 'hearts' || lastCard.suit === 'diamonds') !==
+            (card.suit === 'hearts' || card.suit === 'diamonds');
+
+        if (!isValidMove) {
+          console.error(
+            "Déplacement invalide : il faut une carte de couleur opposée et d'une valeur immédiatement inférieure.",
+          );
+          return;
+        }
+      }
+
+      updatedColumns[targetIndex] = [...targetColumn, card];
+      setColumns(updatedColumns);
+      setWaste(updatedWaste);
+      return;
+    }
+
+    // Déplacements entre colonnes
     const originColumnIndex = columns.findIndex((column) =>
       column.some((c) => c.value === card.value && c.suit === card.suit),
     );
@@ -116,13 +143,12 @@ const Solitaire = () => {
     }
   };
 
-  // Fonction pour tirer une carte de la pioche
   const drawFromStock = () => {
     if (stock.length > 0) {
-      const card = stock.pop(); // Retire la dernière carte de la pioche
-      card.isFaceUp = true; // La carte devient visible
-      setStock([...stock]); // Met à jour la pioche
-      setWaste([...waste, card]); // Ajoute la carte à la défausse
+      const card = stock.pop();
+      card.isFaceUp = true;
+      setStock([...stock]);
+      setWaste([...waste, card]);
     }
   };
 
