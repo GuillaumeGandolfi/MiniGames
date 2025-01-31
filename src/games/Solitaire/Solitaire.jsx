@@ -166,6 +166,11 @@ const Solitaire = () => {
       card.isFaceUp = true;
       setStock([...stock]);
       setWaste([...waste, card]);
+    } else if (waste.length > 0) {
+      // Recycler la défausse dans la pioche
+      const newStock = waste.map((card) => ({ ...card, isFaceUp: false }));
+      setStock(newStock);
+      setWaste([]);
     }
   };
 
